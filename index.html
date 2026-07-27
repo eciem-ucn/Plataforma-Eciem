@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sistema Interno ECIEM</title>
+<link rel="stylesheet" href="css/ucn.css">
+<!-- Vendor: Plotly + SheetJS vía CDN (o mover a /vendor para offline) -->
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand">Sistema Interno ECIEM</div>
+    <ul class="menu" id="menu"></ul>
+  </aside>
+  <div id="main">
+    <header id="header">
+      <button class="toggle" id="toggle">☰</button>
+      <span class="title">ECIEM · UCN</span>
+      <span class="spacer"></span>
+      <span id="poll-note" style="font-size:12px;opacity:0;transition:opacity .4s;margin-right:14px">Datos actualizados</span>
+      <span id="who" style="font-size:12px;margin-right:14px;opacity:.85"></span>
+      <span class="logout" id="logout">Cerrar sesión</span>
+    </header>
+    <main id="content"></main>
+  </div>
+</div>
+
+<!-- Config + capas (secrets.js NO se versiona; ver .gitignore) -->
+<script src="settings.js"></script>
+<script src="config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/ui.js"></script>
+<!-- Secciones -->
+<script src="js/sections/oferta.js"></script>
+<script src="js/sections/egresados.js"></script>
+<script src="js/sections/postgrado.js"></script>
+<script src="js/sections/convenios.js"></script>
+<script src="js/sections/aprendizaje.js"></script>
+<script src="js/sections/publicaciones.js"></script>
+<script src="js/sections/proyectos.js"></script>
+<script src="js/sections/permisos.js"></script>
+<script src="js/sections/actas.js"></script>
+<!-- Núcleo -->
+<script src="js/router.js"></script>
+<script src="js/poll.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
