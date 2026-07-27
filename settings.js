@@ -4,5 +4,5 @@
 // =============================================================================
 window.SETTINGS = {
   // URL del Worker desplegado, sin barra final. Ej: https://eciem-worker.tucuenta.workers.dev
-  API_BASE: "https://eciem-ucn.workers.dev"
+  API_BASE: "https://eciem-worker.eciem-ucn.workers.dev"
 };
