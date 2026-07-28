@@ -81,3 +81,22 @@ table.dt tr:hover td{background:#f7fbff}
 .login-card input{width:100%;padding:10px;margin-bottom:12px;border:1px solid #ccc;border-radius:4px;font-size:14px}
 .login-card .btn{width:100%;padding:11px}
 .login-err{color:var(--ucn-tierra);font-size:12px;text-align:center;margin-top:10px;min-height:16px}
+
+/* ---- Pestañas Resumen / Datos ---- */
+.tabs-bar{display:flex;gap:2px;border-bottom:2px solid #e0e6ee;margin-bottom:18px}
+.tab-btn{background:none;border:none;padding:10px 20px;font-size:14px;cursor:pointer;
+  color:#5A5A5A;border-bottom:3px solid transparent;margin-bottom:-2px;font-weight:600}
+.tab-btn:hover{color:#003366}
+.tab-btn.active{color:#003366;border-bottom-color:#AC6D33}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ---- Tabla de datos descargable ---- */
+.datatable-wrap{background:#fff;border-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.08);padding:14px}
+.datatable-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.datatable-count{color:#5A5A5A;font-size:13px}
+.datatable-scroll{overflow-x:auto;max-height:600px;overflow-y:auto}
+.datatable-scroll table.dt{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
+.datatable-scroll th{position:sticky;top:0;background:#003366;color:#fff;padding:8px 10px;text-align:left;font-weight:600}
+.datatable-scroll td{padding:6px 10px;border-bottom:1px solid #eef2f6}
+.datatable-scroll tr:hover td{background:#f5f8fc}

@@ -4,6 +4,7 @@ const SecPublicaciones = {
   sub:"Publicaciones por año, autor, cuartil e índice",
   f:{anio:"",indice:"",autor:"",cuartil:""}, rows:[],
 
+  tableRows(){ try{ return this.filtered(); }catch(e){ return this.rows||[]; } },
   async render(root){
     this.rows = await DataStore.load("publicaciones");
     root.innerHTML = UI.title(this.title,this.sub) +

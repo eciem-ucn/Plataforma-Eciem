@@ -21,6 +21,7 @@ const SecPermisos = {
       return {...r, _fi:fi, Dias:dias, _mes:mes};
     });
   },
+  tableRows(){ try{ return this.filtered(); }catch(e){ return this.rows||[]; } },
   async render(root){
     this.rows = await DataStore.load("permisos");
     root.innerHTML = UI.title(this.title,this.sub) +

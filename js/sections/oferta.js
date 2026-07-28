@@ -30,6 +30,7 @@ const SecOferta = {
     const oferta = await DataStore.load("oferta");
     const res    = await DataStore.load("resultados");
     const rows   = this.computeRenuncias(res);
+    this._rows = rows;   // para la pestaña de tabla de datos
 
     // Filtros (choices desde datos)
     const anios = Agg.uniq(oferta,"Año").sort((a,b)=>b-a);
@@ -63,6 +64,8 @@ const SecOferta = {
       return {...r, Renuncias:ren};
     });
   },
+
+  tableRows(){ try{ return this.filtered(this._rows||[]); }catch(e){ return this._rows||[]; } },
 
   filtered(rows){
     return rows.filter(r=>

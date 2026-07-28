@@ -55,7 +55,24 @@ const Router = {
       a.classList.toggle("active", a.dataset.id===id));
     if(!sec){ root.innerHTML=`<div class="empty">Sección no encontrada</div>`; return; }
     root.innerHTML=`<div class="loading">Cargando sección…</div>`;
-    try{ await sec.render(root); }
+    try{
+      // Inicio no lleva pestañas; el resto sí (Resumen / Tabla de datos)
+      if (id==="inicio" || typeof sec.tableRows !== "function"){
+        await sec.render(root);
+      } else {
+        root.innerHTML = UI.tabs();
+        const pane = document.getElementById("tab-resumen");
+        await sec.render(pane);
+        // Pestaña de datos: se llena al abrirla, con las filas actuales de la sección
+        UI.tabsInit(() => {
+          let rows = [];
+          try { rows = sec.tableRows() || []; } catch(_){ rows = []; }
+          window.__lastTableRows = rows;
+          document.getElementById("tab-datos").innerHTML =
+            UI.dataTable(rows, sec.id || "datos");
+        });
+      }
+    }
     catch(e){ root.innerHTML=`<div class="empty">Error: ${e.message}</div>`; }
   },
 

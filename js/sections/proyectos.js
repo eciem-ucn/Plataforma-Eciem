@@ -7,6 +7,7 @@ const SecProyectos = {
 
   splitColab(s){ return s ? String(s).split(/;\s*/).map(x=>x.trim()).filter(Boolean) : []; },
 
+  tableRows(){ try{ return this.filtered(); }catch(e){ return this.rows||[]; } },
   async render(root){
     this.rows = await DataStore.load("proyectos");
     root.innerHTML = UI.title(this.title,this.sub) +

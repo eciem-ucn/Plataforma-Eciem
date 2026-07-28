@@ -4,6 +4,7 @@ const SecAprendizaje = {
   sub:"Proyectos A+S por año, rubro, asignatura, satisfacción y continuidad",
   f:{anio:"",semestre:"",asignatura:"",rubro:""}, rows:[],
 
+  tableRows(){ try{ return this.filtered(); }catch(e){ return this.rows||[]; } },
   async render(root){
     this.rows = await DataStore.load("aprendizaje");
     root.innerHTML = UI.title(this.title,this.sub) +
