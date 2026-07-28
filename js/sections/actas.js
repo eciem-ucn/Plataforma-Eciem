@@ -11,12 +11,27 @@ const SecActas = {
   parseName(name){
     const base = name.replace(/\.pdf$/i,"");
     const p = base.split("_");
-    if(p.length<6) return null;
-    const [anio,mes,dia,tipo,nombre,apellido]=p;
-    const tipos={INGECO:"Consejo de Carrera de INGECO",IICG:"Consejo de Carrera de IICG",
-      Escuela:"Consejo de Escuela"};
-    return { Anio:anio, Mes:mes, Dia:dia, Tipo:(tipos[tipo]||tipo),
-      Secretario:`${nombre} ${apellido}`, Nombre:name };
+    const tipos = { INGECO:"Consejo de Carrera de INGECO", IICG:"Consejo de Carrera de IICG",
+      Escuela:"Consejo de Escuela" };
+
+    let anio, mes, dia, tipo, resto;
+    // Formato real: AAAAMMDD_TIPO_Nombre_Apellido...  (fecha pegada, 8 dígitos)
+    if (p.length >= 3 && /^\d{8}$/.test(p[0])){
+      anio = p[0].slice(0,4); mes = p[0].slice(4,6); dia = p[0].slice(6,8);
+      tipo = p[1]; resto = p.slice(2);
+    }
+    // Formato alterno: AAAA_MM_DD_TIPO_Nombre_Apellido...  (fecha separada)
+    else if (p.length >= 5 && /^\d{4}$/.test(p[0])){
+      anio = p[0]; mes = p[1]; dia = p[2]; tipo = p[3]; resto = p.slice(4);
+    }
+    else return null;
+
+    const secretario = resto.join(" ").trim();
+    const MESES = {"01":"Enero","02":"Febrero","03":"Marzo","04":"Abril","05":"Mayo",
+      "06":"Junio","07":"Julio","08":"Agosto","09":"Septiembre","10":"Octubre",
+      "11":"Noviembre","12":"Diciembre"};
+    return { Anio:anio, Mes:mes, MesNombre:(MESES[mes]||mes), Dia:dia, Tipo:(tipos[tipo]||tipo),
+      Secretario: secretario || "(sin nombre)", Nombre:name };
   },
 
   async render(root){
@@ -54,7 +69,7 @@ const SecActas = {
       (!this.f.secretario||r.Secretario===this.f.secretario));
     document.getElementById("ac-tabla").innerHTML = UI.box("Actas",
       UI.table(["Año","Mes","Día","Tipo de Consejo","Secretario","Acta"], d, r=>
-        `<tr><td>${r.Anio}</td><td>${r.Mes}</td><td>${r.Dia}</td>
+        `<tr><td>${r.Anio}</td><td>${r.MesNombre||r.Mes}</td><td>${r.Dia}</td>
          <td>${r.Tipo}</td><td>${r.Secretario}</td>
          <td><a class="btn" target="_blank" href="${API.fileUrl(r.id)}">Abrir</a></td></tr>`));
   }
