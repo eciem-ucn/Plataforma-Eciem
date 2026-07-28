@@ -51,35 +51,3 @@ const DataStore = {
   async refreshSignature(){ return API.signature(); }
 };
 window.DataStore = DataStore;
-
-// ---- Agg: helpers de agregación usados por las secciones ----
-// (reintroducidos en el frontend; el parseo de xlsx es del Worker, pero estos
-//  cálculos siguen ocurriendo en el navegador sobre las filas ya recibidas)
-const Agg = {
-  sumBy(rows, keyFn, field){
-    const m = new Map();
-    for (const r of rows){
-      const k = keyFn(r), v = Number(r[field]) || 0;
-      m.set(k, (m.get(k)||0) + v);
-    }
-    return m;
-  },
-  countBy(rows, keyFn){
-    const m = new Map();
-    for (const r of rows){ const k = keyFn(r); m.set(k,(m.get(k)||0)+1); }
-    return m;
-  },
-  sumFields(rows, keyFn, fields){
-    const m = new Map();
-    for (const r of rows){
-      const k = keyFn(r);
-      if (!m.has(k)) m.set(k, Object.fromEntries(fields.map(f=>[f,0])));
-      const o = m.get(k);
-      for (const f of fields) o[f] += Number(r[f])||0;
-    }
-    return m;
-  },
-  sum(rows, field){ let s=0; for(const r of rows) s+=Number(r[field])||0; return s; },
-  uniq(rows, field){ return [...new Set(rows.map(r=>r[field]).filter(v=>v!=null&&v!==""))]; }
-};
-window.Agg = Agg;
