@@ -63,13 +63,11 @@ const Router = {
         root.innerHTML = UI.tabs();
         const pane = document.getElementById("tab-resumen");
         await sec.render(pane);
-        // Pestaña de datos: se llena al abrirla, con las filas actuales de la sección
+        // Pestaña de datos: tabla autónoma con sus propios filtros (usa filas completas)
         UI.tabsInit(() => {
           let rows = [];
-          try { rows = sec.tableRows() || []; } catch(_){ rows = []; }
-          window.__lastTableRows = rows;
-          document.getElementById("tab-datos").innerHTML =
-            UI.dataTable(rows, sec.id || "datos");
+          try { rows = (sec.allRows ? sec.allRows() : sec.tableRows()) || []; } catch(_){ rows = []; }
+          UI.dataTableFilterable("tab-datos", rows, sec.id || "datos");
         });
       }
     }

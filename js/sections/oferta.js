@@ -66,6 +66,7 @@ const SecOferta = {
   },
 
   tableRows(){ try{ return this.filtered(this._rows||[]); }catch(e){ return this._rows||[]; } },
+  allRows(){ return this._rows||[]; },
 
   filtered(rows){
     return rows.filter(r=>

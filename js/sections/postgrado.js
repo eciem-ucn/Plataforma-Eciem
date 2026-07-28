@@ -4,6 +4,7 @@ function makePostgrado(id, dataset, title){
     id, title, sub:"Estado curricular, artículos y evolución del programa",
     f:{anio:"",director:""}, rows:[],
     tableRows(){ try{ return this.filtered(); }catch(e){ return this.rows||[]; } },
+    allRows(){ return this.rows||[]; },
     async render(root){
       this.rows = await DataStore.load(dataset);
       root.innerHTML = UI.title(title,this.sub) +
