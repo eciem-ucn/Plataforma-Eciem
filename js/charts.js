@@ -12,8 +12,10 @@ const cfg = { responsive:true, displayModeBar:false };
 
 // Eje X categórico estándar: trata los valores como etiquetas (no números),
 // evita decimales en años/conteos y reserva espacio para etiquetas giradas.
+// tickformat:"d" refuerza que, si algún valor se interpretara como número,
+// se muestre como entero sin decimales.
 const catAxis = (over={}) => Object.assign({
-  type:"category", tickangle:-45, automargin:true, tickfont:{size:10}
+  type:"category", tickangle:-45, automargin:true, tickfont:{size:10}, tickformat:"d"
 }, over);
 // Eje numérico de conteos: solo enteros.
 const intAxis = (over={}) => Object.assign({
