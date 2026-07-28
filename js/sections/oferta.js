@@ -8,7 +8,7 @@ const SecOferta = {
   sub: "Cupos, demanda y resultados académicos por asignatura y período",
 
   // Estado de filtros de la sección
-  f: { anio:"", semestre:"", asignatura:"" },
+  f: { anio:"", semestre:"", carrera:"", asignatura:"" },
 
   // ---- render: pinta el layout y engancha eventos ----
   async render(root){
@@ -22,7 +22,8 @@ const SecOferta = {
        <div class="grid-2">
          ${UI.plotBox("Distribución de Resultados","plot_of_res",300)}
          ${UI.plotBox("Evolución Histórica","plot_of_evo",300)}
-       </div>`;
+       </div>
+       ${UI.plotBox("Comparación por Carrera","plot_of_carrera",320)}`;
     await this.build();
   },
 
@@ -35,24 +36,31 @@ const SecOferta = {
     // Filtros (choices desde datos)
     const anios = Agg.uniq(oferta,"Año").sort((a,b)=>b-a);
     const asigs = Agg.uniq(oferta,"Asignatura").sort();
+    const carreras = Agg.uniq(rows,"Carrera").sort();
+    const hayCarrera = carreras.length > 0;
     document.getElementById("of-filtros").innerHTML = UI.filters(
       UI.select("of-anio","Año",anios) +
       UI.select("of-sem","Semestre",[1,2]) +
+      (hayCarrera ? UI.select("of-car","Carrera",carreras,"Todas") : "") +
       UI.select("of-asig","Asignatura",asigs,"Todas"),
       "of-clear"
     );
-    ["of-anio","of-sem","of-asig"].forEach(id=>{
-      document.getElementById(id).value =
-        id==="of-anio"?this.f.anio : id==="of-sem"?this.f.semestre : this.f.asignatura;
-      document.getElementById(id).onchange = e => {
+    ["of-anio","of-sem","of-car","of-asig"].forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;  // of-car puede no existir si no hay columna Carrera
+      el.value =
+        id==="of-anio"?this.f.anio : id==="of-sem"?this.f.semestre :
+        id==="of-car"?this.f.carrera : this.f.asignatura;
+      el.onchange = e => {
         if(id==="of-anio") this.f.anio=e.target.value;
         else if(id==="of-sem") this.f.semestre=e.target.value;
+        else if(id==="of-car") this.f.carrera=e.target.value;
         else this.f.asignatura=e.target.value;
         this.draw(rows);
       };
     });
     document.getElementById("of-clear").onclick = () => {
-      this.f={anio:"",semestre:"",asignatura:""}; this.build();
+      this.f={anio:"",semestre:"",carrera:"",asignatura:""}; this.build();
     };
     this.draw(rows);
   },
@@ -72,6 +80,7 @@ const SecOferta = {
     return rows.filter(r=>
       (!this.f.anio || String(r.Año)===this.f.anio) &&
       (!this.f.semestre || String(r.Semestre)===this.f.semestre) &&
+      (!this.f.carrera || r.Carrera===this.f.carrera) &&
       (!this.f.asignatura || r.Asignatura===this.f.asignatura)
     );
   },
@@ -83,6 +92,22 @@ const SecOferta = {
     this.plotComposicion(d);
     this.plotResultados(d);
     this.plotEvolucion(allRows); // evolución usa histórico completo
+    this.plotCarrera(d);
+  },
+
+  // Comparación por carrera: inscritos, aprobados y renuncias agrupados por carrera
+  plotCarrera(d){
+    const hayCarrera = d.some(r => r.Carrera!=null && r.Carrera!=="");
+    if(!d.length || !hayCarrera) return emptyPlot("plot_of_carrera",
+      "Sin columna Carrera en los datos");
+    const g = Agg.sumFields(d, r=>r.Carrera||"(sin carrera)", ["Inscritos","Aprobados","Renuncias"]);
+    const cats=[...g.keys()].sort();
+    const co=CONFIG.COLORS;
+    Charts.groupedBars("plot_of_carrera", cats, [
+      {name:"Inscritos", y:cats.map(c=>g.get(c).Inscritos)},
+      {name:"Aprobados", y:cats.map(c=>g.get(c).Aprobados)},
+      {name:"Renuncias", y:cats.map(c=>g.get(c).Renuncias)}
+    ], {yTitle:"Estudiantes"});
   },
 
   valueBoxes(d){

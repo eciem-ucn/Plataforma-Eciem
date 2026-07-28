@@ -137,6 +137,15 @@ const Charts = {
     Plotly.newPlot(elId, data, baseLayout({
       barmode:"stack", yaxis:{title:opt.yTitle||""}, xaxis:{tickangle:-45,automargin:true}
     }), cfg);
+  },
+
+  // Barras agrupadas (una al lado de otra por categoría) para comparar métricas.
+  groupedBars(elId, cats, series, opt={}){
+    const data = series.map((s,i)=>({ type:"bar", name:s.name, x:cats, y:s.y,
+      marker:{color: CONFIG.PALETTE[i%CONFIG.PALETTE.length]} }));
+    Plotly.newPlot(elId, data, baseLayout({
+      barmode:"group", yaxis:{title:opt.yTitle||""}, xaxis:{tickangle:-45,automargin:true}
+    }), cfg);
   }
 };
 window.Charts = Charts;
