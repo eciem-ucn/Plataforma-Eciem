@@ -4,11 +4,21 @@
 // =============================================================================
 const C = () => CONFIG.COLORS;
 const baseLayout = (over={}) => Object.assign({
-  margin:{t:30,r:50,b:80,l:55}, font:{family:"Arial",size:12},
+  margin:{t:40,r:55,b:110,l:60}, font:{family:"Arial",size:11},
   paper_bgcolor:"#fff", plot_bgcolor:"#fff", showlegend:true,
-  legend:{orientation:"h",y:1.12,x:0}
+  legend:{orientation:"h",y:1.18,x:0,font:{size:11}}
 }, over);
 const cfg = { responsive:true, displayModeBar:false };
+
+// Eje X categórico estándar: trata los valores como etiquetas (no números),
+// evita decimales en años/conteos y reserva espacio para etiquetas giradas.
+const catAxis = (over={}) => Object.assign({
+  type:"category", tickangle:-45, automargin:true, tickfont:{size:10}
+}, over);
+// Eje numérico de conteos: solo enteros.
+const intAxis = (over={}) => Object.assign({
+  tickformat:"d", automargin:true
+}, over);
 
 function empty(elId, msg="Sin datos disponibles"){
   document.getElementById(elId).innerHTML = `<div class="empty">${msg}</div>`;
@@ -26,9 +36,9 @@ const Charts = {
     ];
     Plotly.newPlot(elId, data, baseLayout({
       barmode:"group",
-      yaxis:{title:opt.yTitle||"Cantidad"},
+      yaxis:intAxis({title:opt.yTitle||"Cantidad"}),
       yaxis2:{title:opt.y2Title||"%",overlaying:"y",side:"right",range:[0,120]},
-      xaxis:{tickangle:-45}
+      xaxis:catAxis()
     }), cfg);
   },
 
@@ -39,8 +49,11 @@ const Charts = {
     if (lineVals) s.push({ type:"scatter", mode:"lines+markers", name:lineName,
       x:cats, y:lineVals, line:{color:C().azulOscuro,width:2}, marker:{symbol:"x",size:8} });
     Plotly.newPlot(elId, s, baseLayout({
-      barmode:"stack", title:{text:title||"",font:{size:14}},
-      yaxis:{title:"Estudiantes"}, xaxis:{tickangle:-45}
+      barmode:"stack",
+      title:{text:title||"",font:{size:13},x:0.5,xanchor:"center",y:0.98,yanchor:"top"},
+      margin:{t:70,r:55,b:130,l:60},
+      legend:{orientation:"h",y:1.08,x:0,font:{size:10}},
+      yaxis:intAxis({title:"Estudiantes"}), xaxis:catAxis()
     }), cfg);
   },
 
@@ -48,8 +61,9 @@ const Charts = {
   pie(elId, labels, values, colors){
     Plotly.newPlot(elId, [{
       type:"pie", labels, values, textinfo:"label+percent",
+      textposition:"auto", automargin:true, insidetextorientation:"horizontal",
       marker:{colors:colors||[C().verde,C().rojo,C().amarillo,C().azul]}
-    }], baseLayout({showlegend:false,margin:{t:20,b:20,l:20,r:20}}), cfg);
+    }], baseLayout({showlegend:false,margin:{t:30,b:30,l:40,r:40}}), cfg);
   },
 
   // Barras simples (horizontales u verticales)
@@ -60,8 +74,8 @@ const Charts = {
       marker:{color:opt.color||C().azulOscuro}
     }], baseLayout({
       showlegend:false,
-      xaxis:{title:opt.xTitle||"", tickangle:opt.horizontal?0:-45},
-      yaxis:{title:opt.yTitle||""}
+      xaxis: opt.horizontal ? intAxis({title:opt.xTitle||""}) : catAxis({title:opt.xTitle||""}),
+      yaxis: opt.horizontal ? catAxis({title:opt.yTitle||"",tickangle:0}) : intAxis({title:opt.yTitle||""})
     }), cfg);
   },
 
@@ -75,9 +89,9 @@ const Charts = {
       { type:"scatter", mode:"lines+markers", name:opt.l2Name||"% Renuncia",
         x:cats, y:l2, yaxis:"y2", line:{color:co.rojo,width:2}, marker:{symbol:"triangle-up"} }
     ], baseLayout({
-      yaxis:{title:opt.yTitle||"Inscritos"},
+      yaxis:intAxis({title:opt.yTitle||"Inscritos"}),
       yaxis2:{title:"Tasa (%)",overlaying:"y",side:"right",range:[0,100]},
-      xaxis:{tickangle:-45}
+      xaxis:catAxis()
     }), cfg);
   },
 
@@ -85,22 +99,23 @@ const Charts = {
   lines(elId, cats, series){
     const data = series.map(s => ({ type:"scatter", mode:"lines+markers",
       name:s.name, x:cats, y:s.y, line:{color:s.color,width:2} }));
-    Plotly.newPlot(elId, data, baseLayout({ xaxis:{tickangle:-45} }), cfg);
+    Plotly.newPlot(elId, data, baseLayout({ xaxis:catAxis() }), cfg);
   },
 
   // Histograma
   histogram(elId, values, opt={}){
     Plotly.newPlot(elId, [{ type:"histogram", x:values,
       marker:{color:opt.color||C().azul}, nbinsx:opt.bins||15 }],
-      baseLayout({showlegend:false, xaxis:{title:opt.xTitle||""}, yaxis:{title:"Frecuencia"}}), cfg);
+      baseLayout({showlegend:false, xaxis:{title:opt.xTitle||""}, yaxis:intAxis({title:"Frecuencia"})}), cfg);
   },
 
   // Pie con paleta cíclica y etiquetas conteo+porcentaje
   pieCat(elId, labels, values){
     Plotly.newPlot(elId, [{
       type:"pie", labels, values, textinfo:"label+value+percent",
+      textposition:"auto", automargin:true, insidetextorientation:"horizontal",
       marker:{colors: labels.map((_,i)=>CONFIG.PALETTE[i%CONFIG.PALETTE.length])}
-    }], baseLayout({showlegend:false,margin:{t:20,b:20,l:20,r:20}}), cfg);
+    }], baseLayout({showlegend:false,margin:{t:30,b:30,l:40,r:40}}), cfg);
   },
 
   // Barras (una serie) con color por categoría desde la paleta
@@ -111,8 +126,8 @@ const Charts = {
       marker:{color: opt.colors || cats.map((_,i)=>CONFIG.PALETTE[i%CONFIG.PALETTE.length])}
     }], baseLayout({
       showlegend:false,
-      xaxis:{title:opt.xTitle||"",tickangle:opt.horizontal?0:-45},
-      yaxis:{title:opt.yTitle||"",automargin:true}
+      xaxis: opt.horizontal ? intAxis({title:opt.xTitle||""}) : catAxis({title:opt.xTitle||""}),
+      yaxis: opt.horizontal ? catAxis({title:opt.yTitle||"",tickangle:0}) : intAxis({title:opt.yTitle||""})
     }), cfg);
   },
 
@@ -124,9 +139,9 @@ const Charts = {
       { type:"scatter", mode:"lines+markers", name:opt.lineName||"",
         x:cats, y:line, yaxis:"y2", line:{color:co.tierra,width:2}, marker:{size:7} }
     ], baseLayout({
-      yaxis:{title:opt.yTitle||""},
+      yaxis:intAxis({title:opt.yTitle||""}),
       yaxis2:{title:opt.y2Title||"",overlaying:"y",side:"right"},
-      xaxis:{tickangle:-45}
+      xaxis:catAxis()
     }), cfg);
   },
 
@@ -135,7 +150,7 @@ const Charts = {
     const data = series.map((s,i)=>({ type:"bar", name:s.name, x:cats, y:s.y,
       marker:{color: CONFIG.PALETTE[i%CONFIG.PALETTE.length]} }));
     Plotly.newPlot(elId, data, baseLayout({
-      barmode:"stack", yaxis:{title:opt.yTitle||""}, xaxis:{tickangle:-45,automargin:true}
+      barmode:"stack", yaxis:intAxis({title:opt.yTitle||""}), xaxis:catAxis()
     }), cfg);
   },
 
@@ -144,7 +159,7 @@ const Charts = {
     const data = series.map((s,i)=>({ type:"bar", name:s.name, x:cats, y:s.y,
       marker:{color: CONFIG.PALETTE[i%CONFIG.PALETTE.length]} }));
     Plotly.newPlot(elId, data, baseLayout({
-      barmode:"group", yaxis:{title:opt.yTitle||""}, xaxis:{tickangle:-45,automargin:true}
+      barmode:"group", yaxis:intAxis({title:opt.yTitle||""}), xaxis:catAxis()
     }), cfg);
   }
 };
