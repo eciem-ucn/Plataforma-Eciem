@@ -22,8 +22,10 @@ a{text-decoration:none}
 #header .logout:hover{opacity:1}
 
 /* Sidebar menu */
-.brand{background:var(--ucn-azul-oscuro);color:#fff;font-weight:bold;padding:14px 15px;
-  font-size:15px;border-bottom:1px solid #001a33}
+.brand{background:var(--ucn-azul-oscuro);color:#fff;font-weight:bold;padding:16px 15px;
+  font-size:15px;border-bottom:1px solid #001a33;text-align:center}
+.brand-logo{width:100%;max-width:210px;height:auto;display:block;margin:0 auto 10px}
+.brand-text{font-size:14px;font-weight:bold;color:#fff}
 .menu{list-style:none;margin:0;padding:0}
 .menu li a{display:flex;align-items:center;gap:10px;padding:11px 15px;color:#b8c7ce;
   border-left:3px solid transparent;font-size:14px}
@@ -100,3 +102,27 @@ table.dt tr:hover td{background:#f7fbff}
 .datatable-scroll th{position:sticky;top:0;background:#003366;color:#fff;padding:8px 10px;text-align:left;font-weight:600}
 .datatable-scroll td{padding:6px 10px;border-bottom:1px solid #eef2f6}
 .datatable-scroll tr:hover td{background:#f5f8fc}
+
+/* ---- Filtros propios de la tabla de datos ---- */
+.datatable-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid #eef2f6}
+.datatable-filters select.dt-filter{padding:6px 10px;border:1px solid #ccc;border-radius:4px;
+  font-size:13px;background:#fff;color:#333;min-width:130px}
+.datatable-filters .dt-clear{padding:6px 12px;font-size:13px}
+
+/* ---- Cabecera de bienvenida con logo (página de inicio) ---- */
+.inicio-hero{background:var(--ucn-azul-oscuro);border-radius:8px;padding:28px 32px;
+  margin-bottom:24px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+  box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.inicio-logo{height:80px;width:auto;flex-shrink:0}
+.inicio-hero-text{color:#fff}
+.inicio-hero-title{font-size:24px;font-weight:bold;margin-bottom:4px}
+.inicio-hero-sub{font-size:14px;color:#b8c7ce}
+@media(max-width:600px){
+  .inicio-hero{flex-direction:column;text-align:center;gap:16px}
+  .inicio-logo{height:60px}
+}
+
+/* ---- Logo en la página de login ---- */
+.login-col{display:flex;flex-direction:column;align-items:center;gap:22px}
+.login-logo{width:280px;max-width:80vw;height:auto}

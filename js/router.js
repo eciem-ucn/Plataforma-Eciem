@@ -14,7 +14,14 @@ const Router = {
       async render(root){
         const cards = Router.menu.flatMap(m=>m.children||[m])
           .filter(x=>x.id!=="inicio");
-        root.innerHTML = UI.title(this.title,this.sub) +
+        root.innerHTML =
+          `<div class="inicio-hero">
+             <img src="assets/logo-ucn.png" alt="Universidad Católica del Norte" class="inicio-logo">
+             <div class="inicio-hero-text">
+               <div class="inicio-hero-title">Sistema Interno ECIEM</div>
+               <div class="inicio-hero-sub">Escuela de Ciencias Empresariales · Universidad Católica del Norte</div>
+             </div>
+           </div>` +
           `<div class="vb-row" style="grid-template-columns:repeat(3,1fr)">` +
           cards.map(c=>`<a class="vb blue" href="#${c.id}" style="text-decoration:none">
             <div class="sub" style="font-size:15px;margin-top:0">${c.label}</div></a>`).join("") +
