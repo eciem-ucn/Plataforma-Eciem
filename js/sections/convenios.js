@@ -2,16 +2,23 @@
 const SecConvenios = {
   id:"convenios", title:"Vinculación con el Medio · Convenios",
   sub:"Convenios por año, empresa y rubro (PDF: AAAAMMDD_Empresa_Rubro)",
-  f:{anio:"",mes:"",empresa:"",rubro:""}, data:[],
+  f:{anio:"",mes:"",empresa:"",rubro:"",vigencia:""}, data:[],
   MESES:{ "01":"Enero","02":"Febrero","03":"Marzo","04":"Abril","05":"Mayo","06":"Junio",
     "07":"Julio","08":"Agosto","09":"Septiembre","10":"Octubre","11":"Noviembre","12":"Diciembre" },
 
   parse(name){
-    const base=name.replace(/\.pdf$/i,""); const p=base.split("_");
+    const base=name.replace(/\.pdf$/i,""); let p=base.split("_");
     if(p.length<3) return null;
+    // Vigencia: "No" si el nombre termina en _NV; "Sí" en caso contrario.
+    let vigencia = "Sí";
+    if(p[p.length-1].toUpperCase()==="NV"){
+      vigencia = "No";
+      p = p.slice(0, -1);           // quitar el sufijo NV
+      if(p.length<3) return null;   // debe seguir teniendo fecha_empresa_rubro
+    }
     const f=p[0], empresa=p[1], rubro=p.slice(2).join("_");
     return { Anio:f.slice(0,4), Mes:f.slice(4,6), Dia:f.slice(6,8),
-      Empresa:empresa, Rubro:rubro, id:null, Nombre:name };
+      Empresa:empresa, Rubro:rubro, Vigencia:vigencia, id:null, Nombre:name };
   },
   async render(root){
     const pdfs = await DataStore.listPdfs(CONFIG.CONVENIOS_FOLDER);
@@ -31,15 +38,18 @@ const SecConvenios = {
       UI.select("cv-anio","Año",u("Anio").sort((a,b)=>b-a)) +
       UI.select("cv-mes","Mes",u("Mes")) +
       UI.select("cv-emp","Empresa",u("Empresa"),"Todas") +
-      UI.select("cv-rub","Rubro",u("Rubro"),"Todos"), "cv-clear");
-    const map={"cv-anio":"anio","cv-mes":"mes","cv-emp":"empresa","cv-rub":"rubro"};
+      UI.select("cv-rub","Rubro",u("Rubro"),"Todos") +
+      UI.select("cv-vig","Vigencia",u("Vigencia"),"Todas"), "cv-clear");
+    const map={"cv-anio":"anio","cv-mes":"mes","cv-emp":"empresa","cv-rub":"rubro","cv-vig":"vigencia"};
     Object.keys(map).forEach(id=>{const el=document.getElementById(id);
+      if(!el) return;
       el.value=this.f[map[id]]; el.onchange=e=>{this.f[map[id]]=e.target.value;this.draw();};});
-    document.getElementById("cv-clear").onclick=()=>{this.f={anio:"",mes:"",empresa:"",rubro:""};this.filtros();this.draw();};
+    document.getElementById("cv-clear").onclick=()=>{this.f={anio:"",mes:"",empresa:"",rubro:"",vigencia:""};this.filtros();this.draw();};
   },
   filtered(){return this.data.filter(r=>
     (!this.f.anio||r.Anio===this.f.anio)&&(!this.f.mes||r.Mes===this.f.mes)&&
-    (!this.f.empresa||r.Empresa===this.f.empresa)&&(!this.f.rubro||r.Rubro===this.f.rubro));},
+    (!this.f.empresa||r.Empresa===this.f.empresa)&&(!this.f.rubro||r.Rubro===this.f.rubro)&&
+    (!this.f.vigencia||r.Vigencia===this.f.vigencia));},
   draw(){
     const d=this.filtered();
     document.getElementById("cv-vb").innerHTML = UI.vbRow([
@@ -57,9 +67,10 @@ const SecConvenios = {
     }
     const sorted=[...d].sort((a,b)=>(b.Anio+b.Mes+b.Dia).localeCompare(a.Anio+a.Mes+a.Dia));
     document.getElementById("cv-tabla").innerHTML = UI.box("Listado de Convenios",
-      UI.table(["Año","Mes","Fecha","Empresa","Rubro","Convenio"],sorted,r=>
+      UI.table(["Año","Mes","Fecha","Empresa","Rubro","Vigencia","Convenio"],sorted,r=>
         `<tr><td>${r.Anio}</td><td>${this.MESES[r.Mes]||r.Mes}</td>
          <td>${r.Dia}/${r.Mes}/${r.Anio}</td><td>${r.Empresa}</td><td>${r.Rubro}</td>
+         <td>${r.Vigencia}</td>
          <td><a class="btn" target="_blank" href="${API.fileUrl(r.id)}">Abrir</a></td></tr>`));
   }
 };
